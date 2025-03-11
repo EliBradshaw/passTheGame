@@ -10,6 +10,7 @@ export default class {
     this.position = spawnInPath;
     this.velocity = new Vector();
     this.radius = 5;
+    this.speed = 0.7;
   }
 
   tick(ctx) {
@@ -19,8 +20,7 @@ export default class {
 
   render(ctx) {
     ctx.fillStyle = "red";
-    if (this.game.isSwapped)
-      ctx.fillStyle = "blue";
+    if (this.game.isSwapped) ctx.fillStyle = "blue";
     ctx.beginPath();
     ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
     ctx.fill();
@@ -37,11 +37,11 @@ export default class {
       .add(player.velocity.copy().scale(predictionTime));
 
     // Update enemy velocity towards the predicted position
-    this.velocity
-      .scale(0) // reset velocity
-      .add(predictedPosition)
+    this.velocity = predictedPosition
+      .copy()
       .subtract(this.position)
-      .normalize();
+      .normalize()
+      .scale(this.speed);
 
     for (let enemy of this.game.enemies) {
       if (enemy !== this) {

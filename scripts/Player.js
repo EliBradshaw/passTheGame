@@ -9,7 +9,8 @@ export default class {
     this.position = new Vector(100, 100);
     this.velocity = new Vector(1, 1);
     this.radius = 8;
-    this.speed = 0.04;
+    this.defaultSpeed = 0.04;
+    this.speed = this.defaultSpeed;
 
     this.health = 100;
 
@@ -27,11 +28,7 @@ export default class {
   }
 
   render(ctx) {
-    // ctx.fillStyle = "red";
-    // ctx.beginPath();
-    // ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
-    // ctx.fill();
-    ctx.drawImage(this.image, this.position.x- 3, this.position.y- 8, 7, 15);
+    ctx.drawImage(this.image, this.position.x - 3, this.position.y - 8, 7, 15);
   }
 
   update() {
@@ -42,7 +39,8 @@ export default class {
     if (Keyboard.isDown("a")) newVelocity.x -= 1;
     if (Keyboard.isDown("d")) newVelocity.x += 1;
 
-    this.game.gamePaused = (newVelocity.magnitude() == 0 && !this.lazer.lazerActive);
+    this.game.gamePaused =
+      newVelocity.magnitude() == 0 && !this.lazer.lazerActive;
     newVelocity.normalize().scale(this.speed);
     this.velocity.add(newVelocity);
     this.position.add(this.velocity);
