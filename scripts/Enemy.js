@@ -19,6 +19,8 @@ export default class {
 
   render(ctx) {
     ctx.fillStyle = "red";
+    if (this.game.isSwapped)
+      ctx.fillStyle = "blue";
     ctx.beginPath();
     ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
     ctx.fill();
@@ -45,9 +47,13 @@ export default class {
       if (enemy !== this) {
         let dif = this.position.copy().subtract(enemy.position);
         if (dif.magnitude() < this.radius + enemy.radius) {
-          this.position.add(dif.scale(0.5));
+          this.position.add(dif.scale(0.2));
         }
       }
+    }
+
+    if (this.game.isSwapped) {
+      this.velocity.scale(-0.8);
     }
 
     this.position.add(this.velocity);

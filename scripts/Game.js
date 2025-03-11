@@ -19,6 +19,9 @@ export default class Game {
     window.addEventListener("resize", () => this.resizeCanvas());
 
     this.tick();
+
+    this.timeTillSwap = 100;
+    this.isSwapped = false;
   }
 
   resizeCanvas() {
@@ -32,30 +35,18 @@ export default class Game {
 
   checkPlayerTouchingEnemies() {
     for (let enemy of this.enemies) {
-      let dist = this.player.position
-        .copy()
-        .subtract(enemy.position)
-        .magnitude();
+      let dif = this.player.position
+      .copy()
+      .subtract(enemy.position)
 
-      if (dist < this.player.radius + enemy.radius) {
-        this.gameOver = true;
+      if (dif.magnitude() < this.player.radius + enemy.radius) {
+        this.player.health -= 10;
+        this.player.position.add(dif.scale(0.5));
+        this.player.velocity.scale(0);
+        if (this.player.health <= 0) 
+          this.gameOver = true;
       }
     }
-  }
-
-  checkLazerTouchingEnemies() {
-    if (!this.player.lazerActive) return;
-    const lazerStart = this.player.position;
-    const lazerEnd = this.player.lazerEnd;
-
-    this.enemies = this.enemies.filter((enemy) => {
-      return !Collision.lineIntersectsCircle(
-        lazerStart,
-        lazerEnd,
-        enemy.position,
-        enemy.radius
-      );
-    });
   }
 
   tick() {
@@ -67,7 +58,7 @@ export default class Game {
     if (!this.gamePaused) {
       this.score += 1;
 
-      if (Math.random() < 0.01) {
+      if (Math.random() < 0.00001 * this.score) {
         this.enemies.push(new Enemy(this));
       }
     }
@@ -75,9 +66,24 @@ export default class Game {
     for (let enemy of this.enemies) enemy.tick(this.ctx);
 
     this.checkPlayerTouchingEnemies();
-    this.checkLazerTouchingEnemies();
 
     const after = performance.now();
+    if (!this.gamePaused)
+      this.timeTillSwap -= after - before;
+    if (this.timeTillSwap < 0) {
+      this.isSwapped = !this.isSwapped;
+      if (this.isSwapped)
+        this.timeTillSwap = 30;
+      else
+        this.timeTillSwap = 100;
+    }
+
+    document.getElementById("info").innerHTML = `
+    Time till swap: ${Math.round(this.timeTillSwap)} <br>
+    Score: ${this.score} <br>
+    Health: ${this.player.health}
+    `;
+
     const waitTime = Math.max(0, 1000 / 60 - (after - before));
 
     if (this.gameOver) return this.playerDie();
