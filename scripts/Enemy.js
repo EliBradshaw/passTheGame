@@ -1,7 +1,9 @@
+import Node from "./library/Node.js";
 import Vector from "./library/Vector.js";
 
-export default class {
+export default class Enemy extends Node {
   constructor(game) {
+    super(game);
     this.game = game;
     let player = this.game.player;
     const spawnInPath = player.position

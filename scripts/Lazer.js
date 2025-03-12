@@ -1,9 +1,11 @@
 import Collision from "./library/Collision.js";
 import Mouse from "./library/Mouse.js";
+import Node from "./library/Node.js";
 import Vector from "./library/Vector.js";
 
-export default class Lazer {
+export default class Lazer extends Node {
   constructor(player) {
+    super(player);
     this.game = player.game;
     this.player = player;
     this.lazerActive = false;
@@ -11,16 +13,11 @@ export default class Lazer {
     this.lazerRange = 40;
   }
 
-  tick(ctx) {
-    this.updateLazer();
-    this.renderLazer(ctx);
-  }
-
   centeredPlayerPosition() {
     return this.player.position.copy().add(new Vector(0, 0)); // Lazer centering, if needed
   }
 
-  updateLazer() {
+  update() {
     this.lazerActive = false;
     if (!Mouse.isDown("left")) return;
     this.lazerActive = true;
@@ -52,7 +49,7 @@ export default class Lazer {
     }
   }
 
-  renderLazer(ctx) {
+  render(ctx) {
     if (!this.lazerActive) return;
 
     ctx.lineWidth = 2;

@@ -1,10 +1,12 @@
 import Lazer from "./Lazer.js";
 import Keyboard from "./library/Keyboard.js";
 import Mouse from "./library/Mouse.js";
+import Node from "./library/Node.js";
 import Vector from "./library/Vector.js";
 
-export default class {
+export default class Player extends Node {
   constructor(game) {
+    super(game);
     this.game = game;
     this.position = new Vector(100, 100);
     this.velocity = new Vector(1, 1);
@@ -20,15 +22,31 @@ export default class {
     this.lazer = new Lazer(this);
   }
 
-  tick(ctx) {
-    this.lazer.tick(ctx);
+  checkTouchingEnemies() {
+    for (let enemy of this.game.enemies) {
+      let dif = this.position.copy().subtract(enemy.position);
 
-    this.update();
-    this.render(ctx);
+      if (dif.magnitude() < this.radius + enemy.radius) {
+        this.health -= 10;
+        this.position.add(dif.scale(0.5));
+        this.velocity.scale(0);
+        this.velocity.add(dif.scale(0.1));
+        if (this.health <= 0) this.game.gameOver = true;
+      }
+    }
   }
 
   render(ctx) {
+    ctx.fillStyle = this.game.isSwapped ? "purple" : "orange";
+    let radius = this.game.timeTillSwap / 15 + 1;
+    ctx.beginPath();
+    ctx.arc(this.position.x, this.position.y - 20, radius, 0, 2 * Math.PI);
+    ctx.fill();
     ctx.drawImage(this.image, this.position.x - 3, this.position.y - 8, 7, 15);
+
+    let width = (this.health) / 3;
+    ctx.fillStyle = "green";
+    ctx.fillRect(this.position.x - width/2, this.position.y - 13, width, 2);
   }
 
   update() {
@@ -53,5 +71,7 @@ export default class {
       Math.max(this.position.y, this.radius),
       this.game.canvas.height - this.radius
     );
+
+    this.checkTouchingEnemies();
   }
 }
