@@ -1,4 +1,5 @@
 import Node from "./Node.js";
+import Vector from "./Vector.js";
 
 export default class Sprite extends Node {
   constructor(
@@ -12,6 +13,8 @@ export default class Sprite extends Node {
   ) {
     super(parent, position, topLevel);
 
+    this.offset = new Vector(0, 0);
+
     this.image = new Image();
     this.image.src = imagePath;
 
@@ -20,8 +23,11 @@ export default class Sprite extends Node {
     this.frameCount = frameCount;
     this.frame = 0;
 
+    this.doDraw = true;
+
     this.width = frameWidth || 0;
     this.height = frameHeight || 0;
+    this.scale = 1;
 
     this.image.onload = () => {
       this.width = frameWidth || this.image.width;
@@ -30,8 +36,7 @@ export default class Sprite extends Node {
   }
 
   render(ctx) {
-    if (!this.image.complete) return;
-
+    if (!this.image.complete || !this.doDraw) return;
     if (this.frameCount > 1) {
       const sx = this.frame * this.frameWidth;
       const sy = 0;
@@ -50,8 +55,8 @@ export default class Sprite extends Node {
     } else {
       ctx.drawImage(
         this.image,
-        this.gPosition.x - this.width / 2,
-        this.gPosition.y - this.height / 2
+        this.gPosition.x - this.width / 2 * this.scale,
+        this.gPosition.y - this.height / 2 * this.scale
       );
     }
   }

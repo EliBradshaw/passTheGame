@@ -31,6 +31,25 @@ export default class Node {
     child.parent = this;
   }
 
+  /** Effectively deletes it from the scene */
+  orphanSelf(orphanOwnChildren = false) {
+    let remainingNodes = [];
+    for (let child of this.parent.children) {
+      if (child !== this)
+        remainingNodes.push(child);
+    }
+    this.parent.children = remainingNodes;
+    this.parent = null;
+
+    if (orphanOwnChildren) { // Just giving the option to recursively delete everything
+      for (let child of this.children) {
+        child.orphanSelf(true);
+      }
+    }
+
+    return this;
+  }
+
   tick(ctx) {
     for (let child of this.children) {
       child.tick(ctx);

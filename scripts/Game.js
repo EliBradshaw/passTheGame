@@ -2,6 +2,7 @@ import Enemy from "./Enemy.js";
 import Keyboard from "./library/Keyboard.js";
 import Node from "./library/Node.js";
 import Player from "./Player.js";
+import PonyUp from "./PonyUp.js";
 import SpellHandler from "./SpellHandler.js";
 
 export default class Game extends Node {
@@ -13,6 +14,7 @@ export default class Game extends Node {
     this.gameOver = false;
     this.player = new Player(this);
     this.enemies = [new Enemy(this)];
+    this.ponyUpAvailable = null;
     this.gamePaused = false;
 
     // Set canvas size to match the screen
@@ -62,8 +64,15 @@ export default class Game extends Node {
     if (!this.gamePaused) {
       this.score += 1;
 
-      if (Math.random() < 0.00001 * this.score) {
+      if (Math.random() < 0.00001 * Math.min(this.score, 1000)) {
         this.enemies.push(new Enemy(this));
+      }
+
+      if (Math.random() < 0.002 && !this.ponyUpAvailable && !this.player.ponyied) {
+        this.ponyUpAvailable = new PonyUp(this);
+        // probably a better way to do this but I don't care lol
+        this.ponyUpAvailable.position.x = this.canvas.width * 0.24 * Math.random();
+        this.ponyUpAvailable.position.y = this.canvas.height * 0.22 * Math.random();
       }
     }
 

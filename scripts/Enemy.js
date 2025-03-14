@@ -31,7 +31,6 @@ export default class Enemy extends Node {
   }
 
   update() {
-    console.log(this.sprite.gPosition);
     let player = this.game.player;
     if (this.game.gamePaused) return;
 
