@@ -14,8 +14,8 @@ export default class Player extends Node {
     this.speed = this.defaultSpeed;
 
     this.poniedSpeedMultiplier = 30;
-    this.ponyied = true;
-    this.ponyTime = 5000;
+    this.ponyied = false;
+    this.ponyTime = 0;
     this.ponyMaxTime = 300;
 
     this.health = 100;
