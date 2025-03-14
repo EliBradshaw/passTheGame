@@ -32,7 +32,7 @@ export default class Enemy extends Node {
 
   update() {
     let player = this.game.player;
-    if (this.game.gamePaused) return;
+    if (this.game.gamePaused || player.camoed) return;
 
     // Predict player's future position
     let predictionTime = 30; // Adjust this to change how far ahead the enemy predicts

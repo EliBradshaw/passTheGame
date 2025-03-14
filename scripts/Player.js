@@ -18,6 +18,8 @@ export default class Player extends Node {
     this.ponyTime = 0;
     this.ponyMaxTime = 300;
 
+    this.camoed = false;
+
     this.health = 100;
 
     this.lazer = new Lazer(this);
@@ -27,13 +29,18 @@ export default class Player extends Node {
   }
 
   checkTouchingEnemies() {
-    for (let enemy of this.game.enemies) {
+    if (this.camoed) return;
+
+    // going backwards cuz it might delete enemies
+    for (let i = this.game.enemies.length - 1; i >= 0; i--) {
+      const enemy = this.game.enemies[i];
       let dif = this.position.copy().subtract(enemy.position);
 
       if (dif.magnitude() < this.radius + enemy.radius) {
         if (this.health <= 0) this.game.gameOver = true;
         if (this.ponyied) {
-          enemy.position.add(dif.scale(-0.1));
+          enemy.orphanSelf();
+          this.game.enemies.splice(i, 1);
         } else {
           this.position.add(dif.scale(0.5));
           this.velocity.scale(0);
@@ -45,6 +52,7 @@ export default class Player extends Node {
   }
 
   render(ctx) {
+    if (this.camoed) return;
     this.ponySprite.doDraw = this.ponyied;
 
     ctx.fillStyle = this.game.isSwapped ? "purple" : "orange";
@@ -63,6 +71,16 @@ export default class Player extends Node {
     this.ponyTime = this.ponyMaxTime;
   }
 
+  activateCamo() {
+    this.sprite.doDraw = false;
+    this.camoed = true;
+  }
+
+  deactivateCamo() {
+    this.sprite.doDraw = true;
+    this.camoed = false;
+  }
+
   update() {
     this.velocity.scale(0.98);
     let newVelocity = new Vector();
@@ -70,6 +88,7 @@ export default class Player extends Node {
     if (Keyboard.isDown("s")) newVelocity.y += 1;
     if (Keyboard.isDown("a")) newVelocity.x -= 1;
     if (Keyboard.isDown("d")) newVelocity.x += 1;
+    this.sprite.flipX = newVelocity.x < 0;
 
     this.game.gamePaused =
       newVelocity.magnitude() == 0 && !this.lazer.lazerActive;

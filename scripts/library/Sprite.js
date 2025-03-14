@@ -28,6 +28,7 @@ export default class Sprite extends Node {
     this.width = frameWidth || 0;
     this.height = frameHeight || 0;
     this.scale = 1;
+    this.flipX = false;
 
     this.image.onload = () => {
       this.width = frameWidth || this.image.width;
@@ -37,27 +38,36 @@ export default class Sprite extends Node {
 
   render(ctx) {
     if (!this.image.complete || !this.doDraw) return;
+
+    ctx.save();
+    ctx.translate(this.gPosition.x, this.gPosition.y);
+
+    if (this.flipX) {
+      ctx.scale(-1, 1);
+    }
+
     if (this.frameCount > 1) {
       const sx = this.frame * this.frameWidth;
-      const sy = 0;
-
       ctx.drawImage(
         this.image,
         sx,
-        sy,
+        0,
         this.frameWidth,
         this.frameHeight,
-        this.gPosition.x - this.frameWidth / 2,
-        this.gPosition.y - this.frameHeight / 2,
+        -this.frameWidth / 2,
+        -this.frameHeight / 2,
         this.frameWidth,
         this.frameHeight
       );
     } else {
       ctx.drawImage(
         this.image,
-        this.gPosition.x - this.width / 2 * this.scale,
-        this.gPosition.y - this.height / 2 * this.scale
+        -this.width / 2,
+        -this.height / 2,
+        this.width,
+        this.height
       );
     }
+    ctx.restore();
   }
 }
