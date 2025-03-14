@@ -1,4 +1,5 @@
 import Node from "./library/Node.js";
+import Sprite from "./library/Sprite.js";
 import Vector from "./library/Vector.js";
 
 export default class Enemy extends Node {
@@ -11,24 +12,26 @@ export default class Enemy extends Node {
       .add(player.velocity.copy().normalize().scale(200));
     this.position = spawnInPath;
     this.velocity = new Vector();
-    this.radius = 5;
+    this.radius = 6;
     this.speed = 0.7;
-  }
 
-  tick(ctx) {
-    this.update();
-    this.render(ctx);
+    this.sprite = new Sprite(
+      "../assets/enemy.png",
+      this,
+      null,
+      false,
+      12,
+      9,
+      2
+    );
   }
 
   render(ctx) {
-    ctx.fillStyle = "red";
-    if (this.game.isSwapped) ctx.fillStyle = "blue";
-    ctx.beginPath();
-    ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
-    ctx.fill();
+    this.sprite.frame = this.game.isSwapped ? 1 : 0;
   }
 
   update() {
+    console.log(this.sprite.gPosition);
     let player = this.game.player;
     if (this.game.gamePaused) return;
 

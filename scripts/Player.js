@@ -1,14 +1,13 @@
 import Lazer from "./Lazer.js";
 import Keyboard from "./library/Keyboard.js";
-import Mouse from "./library/Mouse.js";
 import Node from "./library/Node.js";
+import Sprite from "./library/Sprite.js";
 import Vector from "./library/Vector.js";
 
 export default class Player extends Node {
   constructor(game) {
     super(game);
     this.game = game;
-    this.position = new Vector(100, 100);
     this.velocity = new Vector(1, 1);
     this.radius = 8;
     this.defaultSpeed = 0.04;
@@ -16,10 +15,8 @@ export default class Player extends Node {
 
     this.health = 100;
 
-    this.image = new Image();
-    this.image.src = "../assets/player.png";
-
     this.lazer = new Lazer(this);
+    this.sprite = new Sprite("../assets/player.png", this);
   }
 
   checkTouchingEnemies() {
@@ -42,11 +39,10 @@ export default class Player extends Node {
     ctx.beginPath();
     ctx.arc(this.position.x, this.position.y - 20, radius, 0, 2 * Math.PI);
     ctx.fill();
-    ctx.drawImage(this.image, this.position.x - 3, this.position.y - 8, 7, 15);
 
-    let width = (this.health) / 3;
+    let width = this.health / 3;
     ctx.fillStyle = "green";
-    ctx.fillRect(this.position.x - width/2, this.position.y - 13, width, 2);
+    ctx.fillRect(this.position.x - width / 2, this.position.y - 13, width, 2);
   }
 
   update() {

@@ -1,3 +1,4 @@
+import Game from "./Game.js";
 import Collision from "./library/Collision.js";
 import Mouse from "./library/Mouse.js";
 import Node from "./library/Node.js";
@@ -24,6 +25,7 @@ export default class Lazer extends Node {
 
     let direction = Mouse.getMouse()
       .copy()
+      .scale(1 / Game.scale)
       .subtract(this.centeredPlayerPosition())
       .normalize()
       .scale(this.lazerRange);

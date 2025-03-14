@@ -5,6 +5,8 @@ import Player from "./Player.js";
 import SpellHandler from "./SpellHandler.js";
 
 export default class Game extends Node {
+  static scale = 4;
+
   constructor() {
     super();
     this.score = 0;
@@ -16,6 +18,7 @@ export default class Game extends Node {
     // Set canvas size to match the screen
     this.canvas = document.getElementById("canvas");
     this.ctx = this.canvas.getContext("2d");
+
     this.resizeCanvas();
 
     this.lastTickTime = 0;
@@ -23,10 +26,9 @@ export default class Game extends Node {
     // Handle window resize
     window.addEventListener("resize", () => this.resizeCanvas());
 
-    
     this.timeTillSwap = 100;
     this.isSwapped = false;
-    
+
     // Remaining time for each spell in ms
     this.spellHandler = new SpellHandler(this);
 
@@ -47,9 +49,14 @@ export default class Game extends Node {
     const dt = before - this.lastTickTime;
     this.spellHandler.dt = dt;
     this.spellHandler.update();
-    
+
     this.lastTickTime = before;
-    
+
+    this.ctx.imageSmoothingEnabled = false;
+    this.ctx.mozImageSmoothingEnabled = false;
+    this.ctx.webkitImageSmoothingEnabled = false;
+    this.ctx.msImageSmoothingEnabled = false;
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (!this.gamePaused) {
@@ -60,13 +67,14 @@ export default class Game extends Node {
       }
     }
 
-
     document.getElementById("info").innerHTML = `
     Score: ${this.score} <br>
     `;
 
+    this.ctx.save();
+    this.ctx.scale(4, 4);
     super.tick(this.ctx); // call all those children stuff
-
+    this.ctx.restore();
     const after = performance.now();
     if (!this.gamePaused) this.timeTillSwap -= after - before;
     if (this.timeTillSwap < 0) {
