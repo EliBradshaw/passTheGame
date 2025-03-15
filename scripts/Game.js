@@ -1,5 +1,5 @@
 import Enemy from "./Enemy.js";
-import Keyboard from "./library/Keyboard.js";
+import Fish from "./Fish.js";
 import Node from "./library/Node.js";
 import Player from "./Player.js";
 import PonyUp from "./PonyUp.js";
@@ -31,9 +31,6 @@ export default class Game extends Node {
     this.timeTillSwap = 100;
     this.isSwapped = false;
 
-    // Remaining time for each spell in ms
-    this.spellHandler = new SpellHandler(this);
-
     this.tick();
   }
 
@@ -49,8 +46,7 @@ export default class Game extends Node {
   tick() {
     const before = performance.now();
     const dt = before - this.lastTickTime;
-    this.spellHandler.dt = dt;
-    this.spellHandler.update();
+    this.player.spellHandler.dt = dt;
 
     this.lastTickTime = before;
 
@@ -65,7 +61,11 @@ export default class Game extends Node {
       this.score += 1;
 
       if (Math.random() < 0.00001 * Math.min(this.score, 1000)) {
-        this.enemies.push(new Enemy(this));
+        if (Math.random() < 1)
+          this.enemies.push(new Fish(this));
+        else
+          this.enemies.push(new Enemy(this));
+
       }
 
       if (Math.random() < 0.002 && !this.ponyUpAvailable && !this.player.ponyied) {
@@ -93,6 +93,8 @@ export default class Game extends Node {
     }
 
     const waitTime = Math.max(0, 1000 / 60 - (after - before));
+
+    if (this.player.health <= 0) return this.playerDie();
 
     if (this.gameOver) return this.playerDie();
     setTimeout(() => this.tick(), waitTime); // Fix: Use `() => this.tick()` to correctly reference the function

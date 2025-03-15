@@ -3,6 +3,7 @@ import Keyboard from "./library/Keyboard.js";
 import Node from "./library/Node.js";
 import Sprite from "./library/Sprite.js";
 import Vector from "./library/Vector.js";
+import SpellHandler from "./SpellHandler.js";
 
 export default class Player extends Node {
   constructor(game) {
@@ -26,6 +27,9 @@ export default class Player extends Node {
     this.sprite = new Sprite("../assets/player.png", this);
     this.ponySprite = new Sprite("../assets/pony.png", this);
     this.ponySprite.position.y = 5;
+
+    // Remaining time for each spell in ms
+    this.spellHandler = new SpellHandler(this);
   }
 
   checkTouchingEnemies() {
@@ -55,10 +59,18 @@ export default class Player extends Node {
     if (this.camoed) return;
     this.ponySprite.doDraw = this.ponyied;
 
+    let seperation = 8;
+
     ctx.fillStyle = this.game.isSwapped ? "purple" : "orange";
     let radius = this.game.timeTillSwap / 15 + 1;
     ctx.beginPath();
-    ctx.arc(this.position.x, this.position.y - 20, radius, 0, 2 * Math.PI);
+    ctx.arc(this.position.x - seperation, this.position.y - 20, radius, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = "teal";
+    let radius2 = Math.max(this.spellHandler.spellCooldown / 700, 0);
+    ctx.beginPath();
+    ctx.arc(this.position.x + seperation, this.position.y - 20, radius2, 0, 2 * Math.PI);
     ctx.fill();
 
     let width = this.health / 3;

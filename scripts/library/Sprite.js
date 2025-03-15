@@ -54,18 +54,18 @@ export default class Sprite extends Node {
         0,
         this.frameWidth,
         this.frameHeight,
-        -this.frameWidth / 2,
-        -this.frameHeight / 2,
-        this.frameWidth,
-        this.frameHeight
+        -this.frameWidth / 2 * this.scale,
+        -this.frameHeight / 2 * this.scale,
+        this.frameWidth * this.scale,
+        this.frameHeight * this.scale
       );
     } else {
       ctx.drawImage(
         this.image,
         -this.width / 2,
         -this.height / 2,
-        this.width,
-        this.height
+        this.width * this.scale,
+        this.height * this.scale
       );
     }
     ctx.restore();

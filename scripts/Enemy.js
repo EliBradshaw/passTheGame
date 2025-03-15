@@ -72,4 +72,9 @@ export default class Enemy extends Node {
       this.game.canvas.height - this.radius
     );
   }
+
+  orphanSelf() {
+    super.orphanSelf();
+    this.game.enemies.splice(this.game.enemies.indexOf(this), 1);
+  }
 }
