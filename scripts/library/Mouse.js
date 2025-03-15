@@ -2,7 +2,12 @@ import Vector from "./Vector.js";
 
 export default class Mouse {
   static _mouse = new Vector(0, 0);
-  static _buttons = { left: false, right: false };
+  static _buttons = {
+    left: false,
+    right: false,
+    wheel_up: false,
+    wheel_down: false,
+  };
 
   static _init = (() => {
     document.addEventListener("mousemove", (event) => {
@@ -18,6 +23,12 @@ export default class Mouse {
     document.addEventListener("mouseup", (event) => {
       if (event.button == 0) Mouse._buttons.left = false;
       if (event.button == 2) Mouse._buttons.right = false;
+    });
+
+    document.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      if (event.deltaY < 0) Mouse._buttons.wheel_up = true;
+      if (event.deltaY > 0) Mouse._buttons.wheel_down = true;
     });
 
     document.addEventListener("contextmenu", (event) => event.preventDefault());

@@ -16,11 +16,11 @@ export default class SpellHandler extends Node {
     this.player = player;
 
     this.spells = [
-      new Spell("push", 5000, dt => this.pushSpell(dt)),
-      new Spell("freeze", 5000, dt => this.freezeSpell(dt)),
-      new Spell("speed", 5000, dt => this.speedSpell(dt)),
-      new Spell("herculean buff", 10000, dt => this.herculeanBuffSpell(dt)),
-      new Spell("camouflage", 5000, dt => this.camoflaugeSpell(dt)),
+      new Spell("push", 5000, (dt) => this.pushSpell(dt)),
+      new Spell("freeze", 5000, (dt) => this.freezeSpell(dt)),
+      new Spell("speed", 5000, (dt) => this.speedSpell(dt)),
+      new Spell("herculean buff", 10000, (dt) => this.herculeanBuffSpell(dt)),
+      new Spell("camouflage", 5000, (dt) => this.camoflaugeSpell(dt)),
     ];
     this.currentSpell = this.spells[0];
     this.currentSpellIndex = 0;
@@ -35,12 +35,14 @@ export default class SpellHandler extends Node {
     return (
       Mouse.isDown("right") &&
       timer <= 0 &&
-      this.spellCooldown <= 0
+      this.spellCooldown <= 0 &&
+      this.game.cheese >= 1
     );
   }
 
   pushSpell(dt) {
     if (this.canSpell(this.pushSpellTimer)) {
+      this.game.cheese -= 1;
       this.spellCooldown = 5000;
       const pushForce = 50;
 
@@ -60,6 +62,7 @@ export default class SpellHandler extends Node {
 
   freezeSpell(dt) {
     if (this.canSpell(this.freezeSpellTimer)) {
+      this.game.cheese -= 1;
       this.freezeSpellTimer = 10000; // set countdown
       this.spellCooldown = 5000;
     }
@@ -79,6 +82,7 @@ export default class SpellHandler extends Node {
 
   speedSpell(dt) {
     if (this.canSpell(this.speedSpellTimer)) {
+      this.game.cheese -= 1;
       this.speedSpellTimer = 5000;
       this.spellCooldown = 5000;
       this.player.speed = this.player.defaultSpeed * 2;
@@ -93,6 +97,7 @@ export default class SpellHandler extends Node {
   herculeanBuffSpell(dt) {
     // Long cooldown where you can use your spell but more speed and health
     if (this.canSpell(this.herculeanBuffTimer)) {
+      this.game.cheese -= 1;
       this.herculeanBuffTimer = 10000;
       this.spellCooldown = 10000;
       this.player.defaultSpeed *= 1.05;
@@ -107,6 +112,7 @@ export default class SpellHandler extends Node {
 
   camoflaugeSpell(dt) {
     if (this.canSpell(this.camoTimer)) {
+      this.game.cheese -= 1;
       this.camoTimer = 5000;
       this.spellCooldown = 5000;
       this.game.player.activateCamo();
@@ -120,7 +126,7 @@ export default class SpellHandler extends Node {
   }
 
   update() {
-    if (Keyboard.isDown("1")) {
+    if (Mouse.isDown("wheel_up")) {
       if (this.unpressed) {
         this.currentSpellIndex--;
         if (this.currentSpellIndex < 0)
@@ -128,14 +134,13 @@ export default class SpellHandler extends Node {
         this.currentSpell = this.spells[this.currentSpellIndex];
       }
       this.unpressed = false;
-    } else if (Keyboard.isDown("2")) {
+    } else if (Mouse.isDown("wheel_down")) {
       if (this.unpressed) {
         this.currentSpellIndex++;
         if (this.currentSpellIndex >= this.spells.length)
           this.currentSpellIndex = 0;
         this.currentSpell = this.spells[this.currentSpellIndex];
       }
-      
       this.unpressed = false;
     } else {
       this.unpressed = true;
@@ -148,12 +153,19 @@ export default class SpellHandler extends Node {
     if (this.spellCooldown > 0) {
       this.spellCooldown -= dt;
     }
+
+    Mouse._buttons.wheel_up = false;
+    Mouse._buttons.wheel_down = false;
   }
 
   render(ctx) {
     ctx.fillStyle = "blacks";
     ctx.font = "4px Arial";
     let text = "< (1) " + this.currentSpell.name + " (2) >";
-    ctx.fillText(text, this.gPosition.x - text.length / 1.25, this.gPosition.y + 13);
+    ctx.fillText(
+      text,
+      this.gPosition.x - text.length / 1.25,
+      this.gPosition.y + 13
+    );
   }
 }

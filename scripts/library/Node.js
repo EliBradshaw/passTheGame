@@ -1,6 +1,12 @@
 import Vector from "./Vector.js";
 
 export default class Node {
+  /**
+   *
+   * @param {Node} parent
+   * @param {Vector} position
+   * @param {Boolean} topLevel
+   */
   constructor(parent = null, position = new Vector(0, 0), topLevel = false) {
     this.parent = parent;
     this.position = position
@@ -33,15 +39,14 @@ export default class Node {
 
   /** Effectively deletes it from the scene */
   orphanSelf(orphanOwnChildren = false) {
-    let remainingNodes = [];
-    for (let child of this.parent.children) {
-      if (child !== this) remainingNodes.push(child);
+    if (this.parent) {
+      this.parent.children = this.parent.children.filter(
+        (child) => child !== this
+      );
+      this.parent = null;
     }
-    this.parent.children = remainingNodes;
-    this.parent = null;
 
     if (orphanOwnChildren) {
-      // Just giving the option to recursively delete everything
       for (let child of this.children) {
         child.orphanSelf(true);
       }

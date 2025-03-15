@@ -1,3 +1,4 @@
+import Cheese from "./Cheese.js";
 import Enemy from "./Enemy.js";
 import Fish from "./Fish.js";
 import Node from "./library/Node.js";
@@ -16,6 +17,7 @@ export default class Game extends Node {
     this.enemies = [new Enemy(this)];
     this.ponyUpAvailable = null;
     this.gamePaused = false;
+    this.cheese = 0;
 
     // Set canvas size to match the screen
     this.canvas = document.getElementById("canvas");
@@ -61,23 +63,32 @@ export default class Game extends Node {
       this.score += 1;
 
       if (Math.random() < 0.00001 * Math.min(this.score, 1000)) {
-        if (Math.random() < 1)
-          this.enemies.push(new Fish(this));
-        else
-          this.enemies.push(new Enemy(this));
-
+        if (Math.random() < 1) this.enemies.push(new Fish(this));
+        else this.enemies.push(new Enemy(this));
       }
 
-      if (Math.random() < 0.002 && !this.ponyUpAvailable && !this.player.ponyied) {
+      if (Math.random() < 0.005) {
+        console.log("cheese");
+        this.addChild(new Cheese(this));
+      }
+
+      if (
+        Math.random() < 0.002 &&
+        !this.ponyUpAvailable &&
+        !this.player.ponyied
+      ) {
         this.ponyUpAvailable = new PonyUp(this);
         // probably a better way to do this but I don't care lol
-        this.ponyUpAvailable.position.x = this.canvas.width * 0.24 * Math.random();
-        this.ponyUpAvailable.position.y = this.canvas.height * 0.22 * Math.random();
+        this.ponyUpAvailable.position.x =
+          this.canvas.width * 0.24 * Math.random();
+        this.ponyUpAvailable.position.y =
+          this.canvas.height * 0.22 * Math.random();
       }
     }
 
     document.getElementById("info").innerHTML = `
     Score: ${this.score} <br>
+    Cheese: ${this.cheese} <br>
     `;
 
     this.ctx.save();
